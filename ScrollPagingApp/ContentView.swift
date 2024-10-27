@@ -4,6 +4,7 @@ struct ContentView: View {
     @State private var showCameraScreen = true
     @State private var dragOffsetY: CGFloat = 0
 
+    @State private var columnCount: Int = 2
     var columns: [GridItem] = Array(repeating: .init(.flexible()), count: 2)
     var rows: [GridItem] = Array(repeating: .init(.flexible()), count: 20)
 
@@ -18,12 +19,12 @@ struct ContentView: View {
                         }
 
                     ScrollView(showCameraScreen ? .horizontal : .vertical){
-                        LazyVGrid(columns: showCameraScreen ? rows : columns) {
+                        LazyVGrid(columns: showCameraScreen ? rows : Array(repeating: .init(.flexible()), count: columnCount)) {
                             ForEach(0..<20, id: \.self) { index in
                                 RoundedRectangle(cornerRadius: 16)
                                     .fill(.red)
                                     .frame(
-                                        width: showCameraScreen ? 80 : UIScreen.main.bounds.width/2-60,
+                                        width: showCameraScreen ? 80 : (UIScreen.main.bounds.width/CGFloat(columnCount))-60,
                                         height: showCameraScreen ? 64 : 240
                                     )
                                     .overlay {
@@ -46,16 +47,46 @@ struct ContentView: View {
                 )
             }
 
-            Button(action: {
-                toggleScreen()
-            }) {
-                Text(showCameraScreen ? "Show Grid" : "Show List")
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
+            HStack {
+                Button(action: {
+                    toggleScreen()
+                }) {
+                    Text(showCameraScreen ? "Show Grid" : "Show List")
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
+                .padding()
+
+                Button(action: {
+                    withAnimation {
+                        columnCount = columnCount + 1
+                    }
+                }) {
+                    Text("+")
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
+                .padding()
+
+                Button(action: {
+                    withAnimation {
+                        if columnCount > 1 {
+                            columnCount = columnCount - 1
+                        }
+                    }
+                }) {
+                    Text("-")
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
+                .padding()
             }
-            .padding()
         }
     }
 
